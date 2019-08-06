@@ -1,0 +1,35 @@
+* Terminology:
+First, some terminology:
+ - Model: The physical model used for sound synthesis in the faust.dsp program.
+ - Parameters: Our physical models have three or four parameters
+    M:mass, K:Damper: Z:stiffness, Z_osc:Internal Damping (optionnal)
+ - ND: Nord Drum
+ - Voices: The ND has six voices (one voice per pad).
+     Our goal is to assign one Faust Model per voice.
+ - Focused voice: On the ND, the voice we are currently editing.
+ - Listening voice: The model will receive midi control values 
+   when this voice has the focus on the ND.
+
+* Introduction
+The models in this folder represent small percusive instruments
+designed to be played with the clavia nord 3p.
+User are free to assign those models to the 6 ND voices.
+The model parameter can be controlled directly from the ND
+front panel.
+
+* Setup
+** Nord drum
+Set voice 1 to note 1, voice 2 to note 2, ..., voice 6 to note 6.
+
+** Models
+Set listening track to the ND voice of your choice.
+ex: To assign a model to voice/pad 1 set listeningtrack=1.
+   
+* Tutorial
+We created a Tutorial.dsp file explaining in details our implementation.
+Have a look.
+
+* TODO Need to check which track has focus on startup
+For the moment we need to touch the "ch-select" buttons for
+the control to start.
+
