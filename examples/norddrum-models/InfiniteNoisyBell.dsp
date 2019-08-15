@@ -1,4 +1,10 @@
-// A simple mi_faust model controlled by the clavia Nord Drum 3P
+// Model Infinite Noisy Bell
+// Description: A bell/gong with a lot of static noise and infinite sustain.
+// Parameters:
+//  - Stiffness -> tone:spectra
+//  - Damping -> tone:decay
+//  - Internal Damping -> tone:bend
+//  - Mass -> tone:pitch
 
 import("stdfaust.lib");
 import("mi.lib");

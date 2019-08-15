@@ -1,5 +1,4 @@
 * Terminology:
-First, some terminology:
  - Model: The physical model used for sound synthesis in the faust.dsp program.
  - Parameters: Our physical models have three or four parameters
     M:mass, K:Damper: Z:stiffness, Z_osc:Internal Damping (optionnal)
@@ -15,21 +14,63 @@ The models in this folder represent small percusive instruments
 designed to be played with the clavia nord 3p.
 User are free to assign those models to the 6 ND voices.
 The model parameter can be controlled directly from the ND
-front panel.
+front panel via MIDI Control Change messages.
 
 * Setup
 ** Nord drum
 Set voice 1 to note 1, voice 2 to note 2, ..., voice 6 to note 6.
 
 ** Models
-Set listening track to the ND voice of your choice.
-ex: To assign a model to voice/pad 1 set listeningtrack=1.
-   
-* Tutorial
-We created a Tutorial.dsp file explaining in details our implementation.
-Have a look.
+Set =listeningVoice= to the ND voice of your choice.
+ex: To assign a model to voice/pad 1 set listeningvoice=1.
 
-* TODO Need to check which track has focus on startup
+* Midi control implementation 
+** How the ND handles Midi CC
+
+Idealy we would want
+All the voice-1 Control Changes on channel 1
+All the voice-2 CC on channel 2
+ ...
+All the voice-6 CC on channel 6
+
+Unfortunatelly, the nord drum sends all outgoing 
+CC values to a single Channel (global channel).
+So our models can't use midi channels to filter out CC informations
+comming from the different ND voices. 
+We need a way to know which ND voice has the focus.
+A model will only listen to incoming MIDI-CC messages when the focus
+is on the right ND voice. 
+
+** Implementation:
+Let's say we expect our model to receive values from ND voice 1
+#+begin_src faust
+listeningVoice = 1;
+#+end_src
+
+We listen to CC70 (select voice) values to know which voice is currently focused.
+ |-----------+---------------|
+ | CC 70 val | focused voice |
+ |-----------+---------------|
+ |         0 |             1 |
+ |        26 |             2 |
+ |        51 |             3 |
+ |        77 |             4 |
+ |       102 |             5 |
+ |       127 |             6 |
+ |-----------+---------------|
+
+#+begin_src faust
+cc70 = nentry("cc70[midi:ctrl 70][hidden:1]", 26, 0, 127, 1);
+voice_selector(s) = *(s==0),*(s==26),*(s==51),*(s==77),*(s==102),*(s==127) :> _;
+focusedVoice = 1,2,3,4,5,6 :  voice_selector(cc70) :hbargraph("focusedVoice",1,6);
+#+end_src
+
+Then if the focus is on the right voice we listen to incomming MIDI-CC messages.
+#+begin_src faust
+focus = (listeningVoice == focusedVoice);
+#+end_src
+
+** TODO Need to check which track has focus on startup
 For the moment we need to touch the "ch-select" buttons for
 the control to start.
 
