@@ -3,6 +3,7 @@
 
 import("stdfaust.lib");
 import("mi.lib");
+import("./utils.lib");
 declare options "[midi:on]";
 
 // --------------
@@ -66,114 +67,7 @@ focusedVoice = 1,2,3,4,5,6 :  voice_selector(cc70) :hbargraph("focusedVoice",1,6
 
 focus = (listeningVoice == focusedVoice);
 
-// -----------------------
-// * Flawless midi control
-// To allow a enjoyable user experience we designed a cool little function
-// (holdAndJoin):
-// 
-//-----------------------`holdAndJoin`--------------------------------
-// A function that holds its output 
-// signal when a 'off' trigger is sent to it.
-// When a 'on' trigger is received
-// the function waits until the input signal
-// joins the held value. Once the input
-// value joins the output value the function is bypassed.
-//
-// When working with multi-timbral synthesizers, some parameters 
-// might be shared between different synth voices (filter cutoff, resonance, ...).
-// It is common that such a parameter will
-// be controlled by a physical potentiometer sending Midi CC.
-// Depending on which synthesizer voice has the focus, the user might set 
-// the potentiometer to different positions.
-// When switching back to a voice, the parameters values 
-// might jump because the potentiometers physical positions 
-// do not match the parameters values anymore.
-// 
-// Wrong jump example: 
-// Focus on voice 1: setting cutoff to 200 Hz via midi CC 54
-// Focus on voice 2: setting cutoff to 1000 Hz via midi CC 54
-// Focus on voice 1: setting cutoff -> value jumps abruptly to 1000 Hz.
-//
-// On the above example we would prefer to:
-// - Hold the parameter value when we lose focus on voice 1.
-// - When focus goes back to voice1, wait 
-//  for the potentiometer position to 
-//  join the parameter value to regain control.
-//
-// Wrong Jump, Illustration:
-//
-// ```
-// (At time 0, the focus is on the synthesizer voice 1.)
-// 127 ^
-//     |        /\ !      .       !              
-//     | /\    /  \!______________!       /\
-//     |/  \  /    !.   .   .     !      /  \    /
-//     |    \/     ! . .     . .  ! /\  /    \  /
-//     |           !  .       . ..!/  \/      \/ 
-//  0  +-----------!--------------!-------------------------------> t
-//       Input CC  !<--- hold --->! Input CC regain control     
-//       sets      ! param value  ! of param value but
-//       the param ! until we     ! jumps abruptly from the held value 
-//       value     ! acquire focus! to the CC value
-//                 !              ! 
-//                 v              ^
-//             focus lost       focus
-//                             acquired
-// ```
-//
-// holdAndjoin, illustration:
-//
-// ```
-// (At time 0, the focus is on voice 1.)
-//  
-// 127 ^
-//     |        /\ !      .       !                /\     
-//     | /\    /  \!______________!_______________/  \    /\
-//     |/  \  /    !.   .   .     !              .!   \  /  \
-//     |    \/     ! . .     . .  ! ..  ...  .. . !    \/
-//     |           !  .       . ..!.  ..   ..  .  !
-//  0  +-----------!--------------!---------------!----------------> t
-//       Input CC  !<--- hold --->!<--- wait ---> ! Input CC      
-//       sets      ! param value  ! until input CC! regain control
-//       the param ! until we     ! joins the     ! of param value
-//       value     ! acquire focus! param value   !
-//                 !              !               !
-//                 v              ^
-//             focus lost       focus
-//                             acquired
-//   Ascii :                               
-//   / : parameter value
-//   . : Midi CC value
-// ```
-//
-// #### Usage
-//
-// ```
-// hslider(...),g : holdAndJoin : _
-// ```
-//
-// #### Usage Example
-//
-// ```
-// x = hslider("x[midi:ctrl 30]", 0, 0, 127, 1);
-// focus = (checkbox("focus_lost") + 1) % 2; 
-// process = x, focus : holdAndJoin : hbargraph("y", 0, 127);
-// ```
-//
-// Where:
-//
-// * `x`: the input signal
-// * `g`: the hold signal (0 for hold, 1 for bypass)
-//-------------------------------------------------------------------
-holdAndJoin(x,g) = (joined_h : _, h), x : select2((g == 1) & (_))
-with {
-     joined_h = (_, _ :> (joined, joined) :> _, _) ~ ((h, h) :> _, _);
-     joined = \(c).((g == 1) & (x == c)) , (g == 0) : ba.on_and_off;
-     h(j) = x : ba.sAndH((g == 1) & (j == 1));
-};
-
 ccToVal(ccMin,ccMax,cc) = cc * ((ccMax - ccMin) / 127) + ccMin;
-
 
 // ----------------
 // * Parameters controls
@@ -199,7 +93,7 @@ m_M = (mx,focus : holdAndJoin) : ccToVal(M_min, M_max) : hbargraph("Mass",M_min,
 // ** Gain parameter: assigned to ND-tone-VOLUME
 G_min = 0;
 G_max = 0.7;
-gx = hslider("gain [midi:ctrl 19]", 0, 0, 127, 1); 
+gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1); 
 OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",0,0.7);
 
 // Input force value: assigned to ND-tone-BEND (TODO)
