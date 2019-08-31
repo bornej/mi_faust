@@ -74,3 +74,46 @@ focus = (listeningVoice == focusedVoice);
 For the moment we need to touch the "ch-select" buttons for
 the control to start.
 
+** ND-CC
+
+
+//------------------
+// ND-CC
+// -----------------
+// 0 Bank Select MSB
+// 7 Level
+// 10 Pan
+ // 12 Reverb type
+// 13 Reverb Color
+// 14 Noise Filter Freq
+// 15 Noise Filer Type
+// 16 Noise Dyn Filter
+// 17 Noise Filter Res
+// 18 Noise Level
+// 19 Tone Level
+// 20 Noise Decay Mode
+// 21 Noise Decay
+// 23 Dist Amount
+// 24 Dist Type
+// 25 EQ Freq
+// 26 EQ Gain
+// 30 Tone Spectra
+// 31 Tone Pitch MSB
+// 32 Bank Select LSB
+// 44 Delay Rate
+// 45 Delay Feedback
+// 46 Tone Wave
+// 47 Delay Amount
+// 48 Reverb Amount
+// 49 Tone Decay Mode
+// 50 Tone Decay
+// 52 Tone Freq
+// 53 Tone Dyn Filter
+// 54 Tone Bend Amount
+// 55 Tone Bend Time
+// 56 Click Level
+// 57 Click type
+// 59 Mono Group
+// 63 Tone Pitch LSB
+// 70 Channel Select
+//------------------
