@@ -2,7 +2,8 @@
 // and user controllable K and Z parameters.
 
 import("stdfaust.lib");
-
+import("../utils.lib");
+import("../mi.lib");
 in1 = vslider("pos",1,-1,1,0.0001) : si.smoo;
 
 OutGain = 50.;
@@ -18,12 +19,6 @@ OutGain = 50.;
 
 // We assume a mass in the system has at most 4 neighbors
 n = 4;
-
-zk_range(kx,zx,m) = k,z
-letrec{
-    'k = min(kx, 1/n * (4*m - 2*n*z));
-    'z = min(zx, 1/n * (2*m - 1/2*n*k));
-};
 
 // We use unitary masses (inertia = 1)
 m = 1;
@@ -47,56 +42,6 @@ zx = hslider("damping [midi:ctrl 50] [hidden:1]", 0, Z_min, Z_max, 0.001);
 nlK = 0.05;
 nlScale = 0.01;
 
-// We redefine some functions from mi.lib
-ground(x0) = equation
-with{
-  // could this term be removed or simlified? Need "unused" input force signal for routing scheme
-  C = 0;
-  equation = x
-    letrec{
-        'x = (x : initState(x0)) + *(C);
-    };
-};
-
-mass(m,x0,x1) = equation
-with{
-  A = 2;
-  B = -1;
-  C = 1/m;
-  equation = x
-    letrec{
-    'x = A*(x : initState(x0)) + B*(x' : initState((x1,x0))) + *(C);
-    };
-};
-
-// We changed the parameters order
-// because partial functions expect non-provided parameters
-// to be the rightmost ones.
-spring(x1r0,x2r0,k,z,x1,x2) =
-  k*(x1-x2) +
-  z*((x1 - (x1' : initState(x1r0))) - (x2 - (x2' : initState(x2r0)))) <: *(-1),_;
-
-nlPluck(k,scale,x1,x2) =
-  select2(
-    absdeltapos>scale,
-    select2(
-      absdeltapos>(scale*0.5),
-      k*deltapos,
-      k*(ma.signum(deltapos)*scale*0.5 - deltapos)),
-    0) <:  *(-1),_
-with{
-  deltapos = x1 - x2;
-  absdeltapos = abs(deltapos);
-};
-
-posInput(init) = _,_ : !,_ : initState(init);
-
-initState((init)) = R(0,init)
-with{
-  R(n,(initn,init)) = +(initn : ba.impulsify@n) : R(n+1,init);
-  R(n,initn) = +(initn : ba.impulsify@n);
-};
-
 // We added two inputs for K and Z to the model function.
 // We pass K,Z through Routinglinktomass into Routingmasstolink
 // which in turns plug those values into the relevant springs.
@@ -116,4 +61,4 @@ RoutingMassToLink(m0,m1,m2,m3,m4,k,z) = m0, m1, k, z, m1, m2, k, z, m2, m3, k, z
 
 // Given User-defined kx and zx values, we let the zk_range function feed the model with K and Z
 // values such that stability conditions are met.
-process = in1, ((kx,zx,m:zk_range): (hbargraph("k",K_min, K_max), hbargraph("z",Z_min, Z_max))) : model : *(OutGain);
+process = in1, ((kx,zx,m,n:zk_range): (hbargraph("k",K_min, K_max), hbargraph("z",Z_min, Z_max))) : model : *(OutGain);
