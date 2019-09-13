@@ -26,14 +26,14 @@ with{
 // punctual mass module
 // m: mass (algorithmic value)
 // x0, x1: initial position and delayed position
-mass(x0,x1,m,f) = equation
+mass(m,x0,x1) = equation
 with{
   A = 2;
   B = -1;
   C = 1/m;
   equation = x 
 	letrec{
-    'x = A*(x : initState(x0)) + B*(x' : initState((x1,x0))) + f *(C);
+    'x = A*(x : initState(x0)) + B*(x' : initState((x1,x0))) + *(C);
 	};
 };
 
