@@ -3,7 +3,7 @@
 
 import("stdfaust.lib");
 import("../utils.lib");
-import("../mi.lib");
+mo = library("./mi_mod.lib");
 in1 = vslider("pos",1,-1,1,0.0001) : si.smoo;
 
 OutGain = 50.;
@@ -47,11 +47,19 @@ nlScale = 0.01;
 // which in turns plug those values into the relevant springs.
 model = 
 (
- RoutingLinkToMass : ground(0.), mass(1.,0., 0.), mass(1.,0., 0.),mass(1.,0., 0.),posInput(0.), _, _ :
+ RoutingLinkToMass :
+ mo.ground(0.),
+ mo.mass(1.,0., 0.),
+ mo.mass(1.,0., 0.),
+ mo.mass(1.,0., 0.),
+ mo.posInput(0.),
+ _, _ :
  RoutingMassToLink : 
- spring(0.05,0.01, 0., 0.), spring(0., 0.), spring(0., 0.),     
- spring(0., 0.),
- nlPluck(nlK,nlScale), par(i, 1,_)
+ mo.spring(0., 0.,0.05,0.01),
+ mo.spring(0., 0.),
+ mo.spring(0., 0.),     
+ mo.spring(0., 0.),
+ mo.nlPluck(nlK,nlScale), par(i, 1,_)
 ) ~par(i, 10, _) : 
 par(i, 10,!), par(i,  1, _)
 with{
@@ -61,4 +69,4 @@ RoutingMassToLink(m0,m1,m2,m3,m4,k,z) = m0, m1, k, z, m1, m2, k, z, m2, m3, k, z
 
 // Given User-defined kx and zx values, we let the zk_range function feed the model with K and Z
 // values such that stability conditions are met.
-process = in1, ((kx,zx,m,n:zk_range): (hbargraph("k",K_min, K_max), hbargraph("z",Z_min, Z_max))) : model : *(OutGain);
+process = in1, ((kx,zx,m,n:kz_range): (hbargraph("k",K_min, K_max), hbargraph("z",Z_min, Z_max))) : model : *(OutGain);
