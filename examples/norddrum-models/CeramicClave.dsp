@@ -50,7 +50,7 @@ gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1);
 OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",0,0.7);
 
 // Input force value: assigned to ND-tone-BEND (TODO)
-gateT =nentry("gate[midi:key %listeningVoice] [hidden:1]",0,1,127,1):ba.impulsify; // ND midi note 60
+gateT =nentry("gate[midi:key %listeningVoice] [hidden:1]",0,0,127,1):ba.impulsify; // ND midi note 60
 in1 = gateT * 0.01;
 
 model = (RoutingLinkToMass: 
