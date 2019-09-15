@@ -29,25 +29,25 @@ ccToVal(ccMin,ccMax,cc) = cc * ((ccMax - ccMin) / 127) + ccMin;
 K_min = 0.0001;
 K_max = 1;
 kx = hslider("stiffness [midi:ctrl 30] [hidden:1]", 0, 0, 127, 1);
-m_K = (kx,focus : holdAndJoin) : ccToVal(K_min, K_max) : hbargraph("Stiffness",K_min,K_max);
+m_K = (kx,focus : holdOrJoin) : ccToVal(K_min, K_max) : hbargraph("Stiffness",K_min,K_max);
 
 // Damping
 Z_min = 0.0001;
 Z_max = 0.01;
 zx = hslider("damping [midi:ctrl 50] [hidden:1]", 0, 0, 127, 1);
-m_Z = (zx,focus : holdAndJoin)  : ccToVal(Z_min, Z_max) : hbargraph("Damping",Z_min,Z_max);
+m_Z = (zx,focus : holdOrJoin)  : ccToVal(Z_min, Z_max) : hbargraph("Damping",Z_min,Z_max);
 
 // Mass
 M_min = 1;
 M_max = 10;
 mx = hslider("mass[hidden:1][midi:ctrl 31]", 0, 0, 127, 1);
-m_M = (mx,focus : holdAndJoin) : ccToVal(M_min, M_max) : hbargraph("Mass",M_min,M_max);
+m_M = (mx,focus : holdOrJoin) : ccToVal(M_min, M_max) : hbargraph("Mass",M_min,M_max);
 
 // Gain
 G_min = 0;
 G_max = 0.7;
 gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1); 
-OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",0,0.7);
+OutGain = (gx,focus : holdOrJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",0,0.7);
 
 // Input force value: assigned to ND-tone-BEND (TODO)
 gateT =nentry("gate[midi:key %listeningVoice] [hidden:1]",0,0,127,1):ba.impulsify; // ND midi note 60

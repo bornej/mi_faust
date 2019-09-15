@@ -16,7 +16,7 @@ declare options "[midi:on]";
 // ----------------------------
 
 // Receive values from ND voice 1
-listeningVoice = 5;
+listeningVoice = 1;
 
 // Find which Nord Drum voice has the focus.
 cc70 = nentry("cc70[midi:ctrl 70][hidden:1]", 0, 0, 127, 1);
@@ -69,20 +69,19 @@ with{
 // Physical parameters
 M_min = 1;
 M_max = 10;
-
 K_min = 0.0001;
-K_max = 3.5;
+K_max = 0.01;
 
 Z_min = 0.0001;
-Z_max = 0.1;
+Z_max = 0.01;
 
 // Midi controled sliders for M, K and Z values
 mx = hslider("mass[midi:ctrl 31]", 0, 0, 127, 1);
-m = (mx,focus : holdAndJoin) : ccToVal(M_min, M_max);
+m = (mx,focus : holdOrJoin) : ccToVal(M_min, M_max);
 kx = hslider("stiffness [midi:ctrl 30]", 0, 0, 127, 1);
-k = (kx,focus : holdAndJoin) : ccToVal(K_min, K_max);
+k = (kx,focus : holdOrJoin) : ccToVal(K_min, K_max);
 zx = hslider("damping [midi:ctrl 50]", 0, 0, 127, 1);
-z = (zx,focus : holdAndJoin) : ccToVal(Z_min, Z_max);
+z = (zx,focus : holdOrJoin) : ccToVal(Z_min, Z_max);
 
 // Volume and Input force parameters
 G_min = 0;
@@ -92,7 +91,7 @@ in_min = 0;
 in_max = 10;
 
 gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1); 
-OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
+OutGain = (gx,focus : holdOrJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
 
 gateT = nentry("gate[midi:key %listeningVoice]",0,0,127,1):ba.impulsify;
 in1 = gateT : ccToVal(in_min,in_max);

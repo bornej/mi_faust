@@ -28,27 +28,27 @@ ccToVal(ccMin,ccMax,cc) = cc * ((ccMax - ccMin) / 127) + ccMin;
 M_min = 0.01;
 M_max = 0.01;
 mx = hslider("mass[hidden:1][midi:ctrl 31]", 0, 0, 127, 1);
-mesh_M = (mx,focus : holdAndJoin) : ccToVal(M_min, M_max) : hbargraph("Mass",M_min,M_max);
+mesh_M = (mx,focus : holdOrJoin) : ccToVal(M_min, M_max) : hbargraph("Mass",M_min,M_max);
 
 K_min = 0.000001;
 K_max = 0.0001;
 kx = hslider("stiffness [midi:ctrl 30] [hidden:1]", 0, 0, 127, 1);
-mesh_K = (kx,focus : holdAndJoin) : ccToVal(K_min, K_max) : hbargraph("Stiffness",K_min,K_max);
+mesh_K = (kx,focus : holdOrJoin) : ccToVal(K_min, K_max) : hbargraph("Stiffness",K_min,K_max);
 
 Z_min = 0.0000001;
 Z_max = 0.0000009; // infinite sustain
 zx = hslider("damping [midi:ctrl 50] [hidden:1]", 0, 0, 127, 1);
-mesh_Z = (zx,focus : holdAndJoin)  : ccToVal(Z_min, Z_max) : hbargraph("Damping",Z_min,Z_max);
+mesh_Z = (zx,focus : holdOrJoin)  : ccToVal(Z_min, Z_max) : hbargraph("Damping",Z_min,Z_max);
 
 Zosc_min = 0.0000000999;
 Zosc_max = 0.0000001;
 zOscx = hslider("IDamp[midi:ctrl 54]", 0, 0, 127, 1);
-mesh_Zosc = (zOscx,focus : holdAndJoin) : ccToVal(Zosc_min, Zosc_max) : hbargraph("Internal Damping", Zosc_min, Zosc_max);
+mesh_Zosc = (zOscx,focus : holdOrJoin) : ccToVal(Zosc_min, Zosc_max) : hbargraph("Internal Damping", Zosc_min, Zosc_max);
 
 G_min = 0;
 G_max = 0.00001;
 gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1); 
-OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
+OutGain = (gx,focus : holdOrJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
 
 // Input force value.
 gateT = nentry("gate[midi:key %listeningTrack] [hidden:1]",0,0,127,1):ba.impulsify; // ND midi note 60

@@ -52,14 +52,14 @@ Z_max = 2*m;
 
 // We let the user control K and Z values with two sliders
 kx = hslider("stiffness [midi:ctrl 30]", 0, 0, 127, 1);
-k = (kx,focus : holdAndJoin) : ccToVal(K_min, K_max);
+k = (kx,focus : holdOrJoin) : ccToVal(K_min, K_max);
 zx = hslider("damping [midi:ctrl 50]", 0, 0, 127, 1);
-z = (zx,focus : holdAndJoin) : ccToVal(Z_min, Z_max);
+z = (zx,focus : holdOrJoin) : ccToVal(Z_min, Z_max);
 
 G_min = 0;
 G_max = 0.7;
 gx = hslider("gain [midi:ctrl 19]", 127, 0, 127, 1); 
-OutGain = (gx,focus : holdAndJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
+OutGain = (gx,focus : holdOrJoin) : ccToVal(G_min, G_max) : hbargraph("Out Gain",G_min,G_max);
 
 gateT = nentry("gate[midi:key %listeningVoice]",0,0,127,1):ba.impulsify; // ND midi note 60
 in_min = 0;
