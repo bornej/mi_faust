@@ -12,14 +12,14 @@ with{
 // integrated oscillator (mass-spring-ground system)
 // m, k, z: mass, stiffness, damping (algorithmic values)
 // x0, x1: initial position and delayed position
-osc(m,k,z,x0,x1) = equation
+osc(x0,x1,k,z,m,f) = equation
 with{
   A = 2 - (k + z)/m;
   B = z/m - 1;
   C = 1/m;
   equation = x 
 	letrec{
-    'x = A*(x : initState(x0)) + B*(x' : initState(x1)) + *(C);
+    'x = A*(x : initState(x0)) + B*(x' : initState(x1)) + f*(C);
 	};
 };
 
