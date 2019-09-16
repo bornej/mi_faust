@@ -16,158 +16,6 @@ User are free to assign those models to the 6 ND voices.
 The model parameter can be controlled directly from the ND
 front panel via MIDI Control Change messages.
 
-* mkz_range
-We implemented mkz_range function that allows user
-to control m,k,z parameters in real time.
-The mkz_range function takes user mx,kx,zx values
-and feeds modified/controlled m,k,z values to the model
-such that the stability conditions are always satisfied.
-
-Rem: In order to feed m,k,z values to the model
-we had to modify the mi library.
-** mi_mod.lib
-*** mi.mass
-- Changed the parameters order for the mass function.
-This is due to the fact that partial functions
-expect the parameter not provided to be the rightmost
-ones.
-
-- Added an explicit name for the external force input
-so we don't confuse m and f.
-
-#+begin_src faust
-mass(x0,x1,m,f) = equation
-with{
-  A = 2;
-  B = -1;
-  C = 1/m;
-  equation = x 
-	letrec{
-    'x = A*(x : initState(x0)) + B*(x' : initState((x1,x0))) + f *(C);
-	};
-};
-#+end_src
-
-*** mi.spring
-Changed parameters order for spring function.
-#+begin_src faust
-spring(x1r0,x2r0,k,z,x1,x2) =
-  k*(x1-x2) +
-  z*((x1 - (x1' : initState(x1r0))) - (x2 - (x2' : initState(x2r0)))) <: *(-1),_;
-#+end_src
-
-** mkz_range 
-Stability conditions for the model:
-Let M_max, the mass with most neighbourghs in the model
-Let n = Card(V(M_max)) with V(x) the Neighbourhood of x
-M_max stable <=> Model Stable <=> Σ Ki + 2ΣZi < 4M
-With Ki in V(M_max) and Zi in V(M_max).
-We suppose all springs have the same K and Z
-(homogeneous medium) so
-The stability condition for the model is:
-(K < 1/n * (4M - 2*n*Z)) && ( Z < 1/n * (2M - 1/2 * n * K))
-
-#+begin_src faust
-mkz_range(mx,kx,zx,n) = equation
-with{
-    security = 0.2;
-    equation = m,k,z
-    letrec{
-    'm = max(mx, security + n*((1/2)*z + (1/4)*k));
-       'k = min(kx, 1/n * (4*m - 2*n*z));
-       'z = min(zx, 1/n * (2*m - (1/2)*n*k));
-    };
-};
-#+end_src
-
-*** TODO security parameter 
-The inequalities are strict and it
-seems we need this dirty =security=
-parameter. We had crashed for values too low...
-This need to be clarified, we dont want
-any black magic in here....
-
-** Hand tuning in the model
-The still require a bit of hand tuning.
-*** Max number of neighbors
-For now we have to tell mkz_range what is
-the maximum number of neighbors for a mass
-in the model.
-
-#+begin_src faust
-// We assume a mass in the system has at most 4 neighbors
-n = 4;
-#+end_src
-
-*** TODO K_min K_max Z_min Z_max
-
-K_min, K_max, Z_min, Z_max
-need to be known at compilation.
-This mean we need to fix those values
-by hand.
-
-We know that
-0 < k < 4m
-0 < z < 2m
-
-
-This implies
-0 < K_max << 4 * M_min
-0 < Z_max << 2 * M_min
-
-/!\ k, z must be strictly positive!
-
-/!\ It appears that if we come too close from the limit we crash
-Need to test if the mkz_range =security= parameter fixes that
-
-*** Feeding m,k,z to the model
-=m,k,z= values are now passed as inputs to the model.
-The =mkz_range= function ensure the user values keep the model stable.
-
-#+begin_src faust
-model =
-(
-    RoutingLinkToMass: 
-    mo.ground(0.),
-    mo.mass(0., 0.),
-    mo.mass(0., 0.),
-    mo.mass(0., 0.),
-    _, _:                       // passing k,z to Routingmasstolink
-    RoutingMassToLink : 
-    mo.spring(0., 0., 0.05,0.01),
-    mo.spring(0., 0.),
-    mo.spring(0., 0.),
-    mo.spring(0., 0.),
-    par(i, 1,_)
-)~par(i, 8, _): par(i, 8,!), par(i,  1, _)
-with{
-    RoutingLinkToMass(l0_f1,l0_f2,l1_f1,l1_f2,l2_f1,l2_f2,l3_f1,l3_f2, f_in1,m, k, z) =
-    l0_f1,                      // to ground input
-    m, l0_f2+l1_f1+l3_f2,       // to mass 1 inputs
-    m, f_in1+l1_f2+l2_f1,       // to mass 2 inputs
-    m, l2_f2+l3_f1,             // to mass 3 inputs
-    k, z;                       // to RoutingMassToLink -> passed to springs
-    RoutingMassToLink(m0,m1,m2,m3, k, z) =
-    m0, m1,                     // to spring 0 inputs
-    k, z, m1, m2,               // to spring 1 inputs
-    k, z, m2, m3,               // to spring 2 inputs
-    k, z, m3, m1,               // to spring 3 inputs
-    m3;                         // to audio output (listening point)
-};
-
-process =
-in1,
-(
-    (m,k,z,n:mkz_range):
-    (
-        hbargraph("m",M_min, M_max),
-        hbargraph("k",K_min, K_max),
-        hbargraph("z",Z_min, Z_max)
-    )
-)
-: model : *(OutGain) <: co.limiter_1176_R4_stereo;
-#+end_src
-
 * Setup
 ** Nord drum
 Set voice 1 to note 1, voice 2 to note 2, ..., voice 6 to note 6.
@@ -193,7 +41,6 @@ We need a way to know which ND voice has the focus.
 A model will only listen to incoming MIDI-CC messages when the focus
 is on the right ND voice. 
 
-** Implementation:
 Let's say we expect our model to receive values from ND voice 1
 #+begin_src faust
 listeningVoice = 1;
@@ -266,3 +113,204 @@ the control to start.
 | 70 | Channel Select    |
 
 
+* Roadmap
+
+** DONE Midi control
+   CLOSED: [2019-09-16 Mon 00:07]
+*** DONE Midi Join
+    CLOSED: [2019-09-16 Mon 00:11]
+Thanks to HoldOrJoin function, Users can now
+edit the parameters from the ND3P.
+
+*** DONE Safe Model tuning (stability conditions)
+    CLOSED: [2019-09-16 Mon 00:23]
+
+Models can now be tuned safely.  
+Thanks to mkz_range function, 
+user parameter inputs are being pre-processed
+before being passed to the model.
+The mkz_range function ensures the values always
+respect the stability conditions for the model.
+
+**** mkz_range
+Stability conditions for the model:
+Let M_max, the mass with most neighbourghs in the model
+Let n = Card(V(M_max)) with V(x) the Neighbourhood of x
+M_max stable <=> Model Stable <=> Σ Ki + 2ΣZi < 4M
+With Ki in V(M_max) and Zi in V(M_max).
+We suppose all springs have the same K and Z
+(homogeneous medium) so
+The stability condition for the model is:
+(K < 1/n * (4M - 2*n*Z)) && ( Z < 1/n * (2M - 1/2 * n * K))
+
+#+begin_src faust
+mkz_range(mx,kx,zx,n) = equation
+with{
+    security = 0.2;
+    equation = m,k,z
+    letrec{
+    'm = max(mx, security + n*((1/2)*z + (1/4)*k));
+       'k = min(kx, 1/n * (4*m - 2*n*z));
+       'z = min(zx, 1/n * (2*m - (1/2)*n*k));
+    };
+};
+#+end_src
+
+Rem: In order to feed m,k,z values to the model
+we had to modify the mi library.
+***** mi_mod.lib
+***** mi.mass
+- Changed the parameters order for the mass function.
+This is due to the fact that partial functions
+expect the parameter not provided to be the rightmost
+ones.
+
+- Added an explicit name for the external force input
+so we don't confuse m and f.
+
+#+begin_src faust
+mass(x0,x1,m,f) = equation
+with{
+  A = 2;
+  B = -1;
+  C = 1/m;
+  equation = x 
+	letrec{
+    'x = A*(x : initState(x0)) + B*(x' : initState((x1,x0))) + f *(C);
+	};
+};
+#+end_src
+
+***** mi.spring
+Changed parameters order for spring function.
+#+begin_src faust
+spring(x1r0,x2r0,k,z,x1,x2) =
+  k*(x1-x2) +
+  z*((x1 - (x1' : initState(x1r0))) - (x2 - (x2' : initState(x2r0)))) <: *(-1),_;
+#+end_src
+
+
+**** TODO security parameter 
+The inequalities are strict and it
+seems we need this dirty =security=
+parameter. We had crashed for values too low...
+This need to be clarified, we dont want
+any black magic in here....
+
+**** Hand tuning in the model
+The still require a bit of hand tuning.
+**** Max number of neighbors
+For now we have to tell mkz_range what is
+the maximum number of neighbors for a mass
+in the model.
+
+#+begin_src faust
+// We assume a mass in the system has at most 4 neighbors
+n = 4;
+#+end_src
+
+**** TODO K_min K_max Z_min Z_max
+
+K_min, K_max, Z_min, Z_max
+need to be known at compilation.
+This mean we need to fix those values
+by hand.
+
+We know that
+0 < k < 4m
+0 < z < 2m
+
+
+This implies
+0 < K_max << 4 * M_min
+0 < Z_max << 2 * M_min
+
+/!\ k, z must be strictly positive!
+
+/!\ It appears that if we come too close from the limit we crash
+Need to test if the mkz_range =security= parameter fixes that
+
+**** Feeding m,k,z to the model
+=m,k,z= values are now passed as inputs to the model.
+The =mkz_range= function ensure the user values keep the model stable.
+
+#+begin_src faust
+model =
+(
+    RoutingLinkToMass: 
+    mo.ground(0.),
+    mo.mass(0., 0.),
+    mo.mass(0., 0.),
+    mo.mass(0., 0.),
+    _, _:                       // passing k,z to Routingmasstolink
+    RoutingMassToLink : 
+    mo.spring(0., 0., 0.05,0.01),
+    mo.spring(0., 0.),
+    mo.spring(0., 0.),
+    mo.spring(0., 0.),
+    par(i, 1,_)
+)~par(i, 8, _): par(i, 8,!), par(i,  1, _)
+with{
+    RoutingLinkToMass(l0_f1,l0_f2,l1_f1,l1_f2,l2_f1,l2_f2,l3_f1,l3_f2, f_in1,m, k, z) =
+    l0_f1,                      // to ground input
+    m, l0_f2+l1_f1+l3_f2,       // to mass 1 inputs
+    m, f_in1+l1_f2+l2_f1,       // to mass 2 inputs
+    m, l2_f2+l3_f1,             // to mass 3 inputs
+    k, z;                       // to RoutingMassToLink -> passed to springs
+    RoutingMassToLink(m0,m1,m2,m3, k, z) =
+    m0, m1,                     // to spring 0 inputs
+    k, z, m1, m2,               // to spring 1 inputs
+    k, z, m2, m3,               // to spring 2 inputs
+    k, z, m3, m1,               // to spring 3 inputs
+    m3;                         // to audio output (listening point)
+};
+
+process =
+in1,
+(
+    (m,k,z,n:mkz_range):
+    (
+        hbargraph("m",M_min, M_max),
+        hbargraph("k",K_min, K_max),
+        hbargraph("z",Z_min, Z_max)
+    )
+)
+: model : *(OutGain) <: co.limiter_1176_R4_stereo;
+#+end_src
+
+
+** TODO [#A] Modify MIMS script to integrate mkz_range
+Models compiled from MIMS need some modifications
+to implement the mkz_range function.
+
+** TODO [#C] Decay time and velocity
+On the nordDrum decay time can be controlled by the
+input velocity. We sould try that in our models.
+for the moment the sound lack responsiveness/expressivity
+when playing with dynamics.
+** TODO [#C] Lfo on stiffness
+We discovered that by moving the stiffness
+value fast enough we could create excitation in the model.
+We were able to sustain and amplify an existing vibration.
+This could be an interesting interraction mode.
+** TODO [#A] Presets
+We need a better way to save/load a model
+configuration
+*** TODO [#A] Init value to HoldOrJoin function
+For the moment all parameters are initialized to 0.
+We need to pass an init value to the HoldOrjoin function.
+
+** TODO Modal analysis
+A n-mass network can be seen as a set of n independent oscillators
+called modal form.
+Turning a model into its modal form is a simple matter
+of diagonalizing two self-adjoint matrices (K,Z).
+The eigenvalues of those matrices are the K_mod,Z_mod 
+values of the independant oscillators constituing the modal form.
+So, computing the spectra of K and Z gives
+us the spectral informations of the model.
+Who would have thought ^^.
+Before implementing this we would like to propose
+a clean mathematical demonstration, so that
+we know clearly what object we manipulate, and
+so we have solid theory foundation for further devellopement.
