@@ -1,9 +1,12 @@
 A kit (6x Mi models) with fixed parameters.
 
-Compile: make all
-Start: make start
-Connect: make connect
-Clean the binaries: make clean
+- Compile: =make all=
+
+- Start: =make start=
+
+- Connect: =make connect=
+
+- Clean the binaries: =make clean=
 
 ** Jack-snapshots
 You need to connect the midi inputs of the model to whatever midi source you are using.
