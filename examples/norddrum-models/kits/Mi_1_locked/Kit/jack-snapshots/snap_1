@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aj-snapshot>
+<alsa>
+  <client name="System">
+    <port id="0" />
+    <port id="1" />
+  </client>
+  <client name="Midi Through">
+    <port id="0" />
+  </client>
+  <client name="OSS sequencer" />
+  <client name="RME RayDAT_1719e">
+    <port id="0" />
+    <port id="32" />
+  </client>
+  <client name="a2jmidid" />
+</alsa>
+<jack>
+  <client name="system">
+    <port name="capture_1">
+      <connection port="PulseAudio JACK Source:front-left" />
+    </port>
+    <port name="capture_2">
+      <connection port="PulseAudio JACK Source:front-right" />
+    </port>
+    <port name="capture_3">
+      <connection port="PulseAudio JACK Source:front-left" />
+    </port>
+    <port name="capture_4">
+      <connection port="PulseAudio JACK Source:front-right" />
+    </port>
+    <port name="capture_5" />
+    <port name="capture_6" />
+    <port name="capture_7" />
+    <port name="capture_8" />
+    <port name="capture_9" />
+    <port name="capture_10" />
+    <port name="capture_11" />
+    <port name="capture_12" />
+    <port name="capture_13" />
+    <port name="capture_14" />
+    <port name="capture_15" />
+    <port name="capture_16" />
+    <port name="capture_17" />
+    <port name="capture_18" />
+    <port name="capture_19" />
+    <port name="capture_20" />
+    <port name="capture_21" />
+    <port name="capture_22" />
+    <port name="capture_23" />
+    <port name="capture_24" />
+    <port name="capture_25" />
+    <port name="capture_26" />
+    <port name="capture_27" />
+    <port name="capture_28" />
+    <port name="capture_29" />
+    <port name="capture_30" />
+    <port name="capture_31" />
+    <port name="capture_32" />
+    <port name="capture_33" />
+    <port name="capture_34" />
+    <port name="capture_35" />
+    <port name="capture_36" />
+  </client>
+  <client name="PulseAudio JACK Sink">
+    <port name="front-left" />
+    <port name="front-right" />
+  </client>
+  <client name="CeramicClave2">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="BassString10_1">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="CeramicClave6">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+  </client>
+  <client name="CeramicClave2">
+    <port name="midi_out_1" />
+  </client>
+  <client name="a2j">
+    <port name="Midi Through [14] (capture): Midi Through Port-0" />
+    <port name="RME RayDAT_1719e [16] (capture): HDSPMx01719e MIDI 1">
+      <connection port="BassString10_1:midi_in_1" />
+      <connection port="CeramicClave2:midi_in_1" />
+      <connection port="CeramicClave3:midi_in_1" />
+      <connection port="CeramicClave4:midi_in_1" />
+      <connection port="String10_5:midi_in_1" />
+      <connection port="CeramicClave6:midi_in_1" />
+    </port>
+    <port name="RME RayDAT_1719e [16] (capture): HDSPMx01719e MIDI 2" />
+  </client>
+  <client name="CeramicClave6">
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="BassString10_1">
+    <port name="midi_out_1" />
+  </client>
+  <client name="echo">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+  </client>
+  <client name="CeramicClave4">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+      <connection port="echo:in_0" />
+    </port>
+  </client>
+  <client name="CeramicClave6">
+    <port name="midi_out_1" />
+  </client>
+  <client name="CeramicClave4">
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="CeramicClave3">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+  </client>
+  <client name="echo">
+    <port name="midi_out_1" />
+  </client>
+  <client name="String10_5">
+    <port name="out_0">
+      <connection port="system:playback_1" />
+    </port>
+  </client>
+  <client name="CeramicClave4">
+    <port name="midi_out_1" />
+  </client>
+  <client name="CeramicClave3">
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="String10_5">
+    <port name="out_1">
+      <connection port="system:playback_2" />
+    </port>
+  </client>
+  <client name="CeramicClave3">
+    <port name="midi_out_1" />
+  </client>
+  <client name="String10_5">
+    <port name="midi_out_1" />
+  </client>
+</jack>
+</aj-snapshot>
