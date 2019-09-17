@@ -1,0 +1,20 @@
+A kit (6x Mi models) with fixed parameters.
+
+Compile: make all
+Start: make start
+Connect: make connect
+Clean the binaries: make clean
+
+** Jack-snapshots
+You need to connect the midi inputs of the model to whatever midi source you are using.
+We recomand to use qjactl patchbay to make those connections. 
+Then you can run
+#+begin_src bash
+ aj-snapshot jack-snapshots/filename
+#+end_src
+to save a patchbay configuration.
+and
+#+begin_src bash
+ aj-snapshot -r jack-snapshots/filename
+#+end_src
+to restore the connections.
