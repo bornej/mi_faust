@@ -10,7 +10,7 @@ A kit (6x Mi models) with fixed parameters.
 
 ** Jack-snapshots
 You need to connect the midi inputs of the model to whatever midi source you are using.
-We recomand to use qjactl patchbay to make those connections. 
+We recommend using qjactl patchbay. 
 Then you can run
 #+begin_src bash
  aj-snapshot jack-snapshots/filename
