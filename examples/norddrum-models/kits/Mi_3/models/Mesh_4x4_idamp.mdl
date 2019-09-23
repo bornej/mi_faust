@@ -1,0 +1,50 @@
+@mesh_M param 1.0
+@mesh_K param 0.1
+@mesh_Z param 0.01
+@mesh_Zosc param 0.0
+
+@mesh_m0_0 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.0 0.0
+@mesh_m0_1 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.0 0.1
+@mesh_m0_2 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.0 0.2
+@mesh_m0_3 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.0 0.30000000000000004
+@mesh_m1_0 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.1 0.0
+@mesh_m1_1 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.1 0.1
+@mesh_m1_2 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.1 0.2
+@mesh_m1_3 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.1 0.30000000000000004
+@mesh_m2_0 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.2 0.0
+@mesh_m2_1 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.2 0.1
+@mesh_m2_2 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.2 0.2
+@mesh_m2_3 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.2 0.30000000000000004
+@mesh_m3_0 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.30000000000000004 0.0
+@mesh_m3_1 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.30000000000000004 0.1
+@mesh_m3_2 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.30000000000000004 0.2
+@mesh_m3_3 osc mesh_M 0 mesh_Zosc 0. 0. membrane 0.30000000000000004 0.30000000000000004
+
+@mesh_r0 spring @mesh_m0_0 @mesh_m0_1 mesh_K mesh_Z
+@mesh_r1 spring @mesh_m0_1 @mesh_m0_2 mesh_K mesh_Z
+@mesh_r2 spring @mesh_m0_2 @mesh_m0_3 mesh_K mesh_Z
+@mesh_r3 spring @mesh_m1_0 @mesh_m1_1 mesh_K mesh_Z
+@mesh_r4 spring @mesh_m1_1 @mesh_m1_2 mesh_K mesh_Z
+@mesh_r5 spring @mesh_m1_2 @mesh_m1_3 mesh_K mesh_Z
+@mesh_r6 spring @mesh_m2_0 @mesh_m2_1 mesh_K mesh_Z
+@mesh_r7 spring @mesh_m2_1 @mesh_m2_2 mesh_K mesh_Z
+@mesh_r8 spring @mesh_m2_2 @mesh_m2_3 mesh_K mesh_Z
+@mesh_r9 spring @mesh_m3_0 @mesh_m3_1 mesh_K mesh_Z
+@mesh_r10 spring @mesh_m3_1 @mesh_m3_2 mesh_K mesh_Z
+@mesh_r11 spring @mesh_m3_2 @mesh_m3_3 mesh_K mesh_Z
+
+@mesh_r12 spring @mesh_m0_0 @mesh_m1_0 mesh_K mesh_Z
+@mesh_r13 spring @mesh_m0_1 @mesh_m1_1 mesh_K mesh_Z
+@mesh_r14 spring @mesh_m0_2 @mesh_m1_2 mesh_K mesh_Z
+@mesh_r15 spring @mesh_m0_3 @mesh_m1_3 mesh_K mesh_Z
+@mesh_r16 spring @mesh_m1_0 @mesh_m2_0 mesh_K mesh_Z
+@mesh_r17 spring @mesh_m1_1 @mesh_m2_1 mesh_K mesh_Z
+@mesh_r18 spring @mesh_m1_2 @mesh_m2_2 mesh_K mesh_Z
+@mesh_r19 spring @mesh_m1_3 @mesh_m2_3 mesh_K mesh_Z
+@mesh_r20 spring @mesh_m2_0 @mesh_m3_0 mesh_K mesh_Z
+@mesh_r21 spring @mesh_m2_1 @mesh_m3_1 mesh_K mesh_Z
+@mesh_r22 spring @mesh_m2_2 @mesh_m3_2 mesh_K mesh_Z
+@mesh_r23 spring @mesh_m2_3 @mesh_m3_3 mesh_K mesh_Z
+
+@in1 frcInput @mesh_m2_0
+@out1 posOutput @mesh_m3_2
