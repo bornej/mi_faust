@@ -1,0 +1,50 @@
+* General info
+
+Name: Mi
+Style: Percussive Trance
+Tempo: ?
+
+Demo for Mi-creative
+
+* Tracks
+** Mi-ND
+Faust Mass-interraction models controlled by the NordDrum 3P.
+See ./Kit/src and ./Kit/bin for sources and binaries.
+
+*** Setup
+**** ND3P
+Voice 1 to Note 1
+Voice 2 to Note 2
+...
+Voice 6 to Note 6
+
+**** TODO Compiling, running, jack
+Take care of compilation, runing the models, patching jack.
+
+*** Tuning
+ND preset G50 (Mi-ND.syx)
+| Track |            1 |            2 |            3 |            4 |        5 |            6 |
+| Model | BassString10 | CeramicClave | CeramicClave | CeramicClave | String10 | Ceramicclave |
+|-------+--------------+--------------+--------------+--------------+----------+--------------|
+| Stif  |           36 |          113 |            0 |            3 |       14 |           88 |
+| Damp  |           92 |           39 |           13 |            6 |      127 |           16 |
+| Mass  |            0 |           42 |           10 |            0 |       25 |            1 |
+| Gain  |            3 |           26 |           44 |           26 |       10 |           10 |
+
+
+Echo-simple 
+fb 93.2
+ms 523.5
+
+
+* Sysex receive
+#+begin_src bash
+amidi -p hw:0,0 -d -r Filename.syx
+#+end_src
+
+* Sysex send
+** NL
+#+begin_src bash
+amidi -p hw:0,0 -s NL_Arp.syx
+#+end_src
+
